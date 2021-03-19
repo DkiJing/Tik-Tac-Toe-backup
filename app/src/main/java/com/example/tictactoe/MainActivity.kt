@@ -77,9 +77,9 @@ class MainActivity : AppCompatActivity() {
         }
         if(mGameOver == false) {
             if(mBoardButtons[location]!!.isEnabled) {
+                setMove(TicTacToeGame.HUMAN_PLAYER, location)
                 var winner = mGame.checkForWinner()
                 var move = -1
-                setMove(TicTacToeGame.HUMAN_PLAYER, location)
                 if (winner == 0) {
                     information.text = "It's Android's turn"
                     if(mMode == 0) {
@@ -96,7 +96,7 @@ class MainActivity : AppCompatActivity() {
                     information.setTextColor(Color.rgb(0, 0, 0))
                     information.text = "It's your turn (X)."
                 }
-                if (winner == 1) {
+                else if (winner == 1) {
                     information.setTextColor(Color.rgb(0, 0, 200))
                     lastWinner = (0..1).random()
                     information.text = "It's a tie!"
