@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
             } else if(mMode == 1) {
                 move = mGame.mediumComputerMove
             } else{
-                move = mGame.mediumComputerMove
+                move = mGame.getHardComputerMove(lastWinner)
             }
             setMove(TicTacToeGame.COMPUTER_PLAYER, move)
         }
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                     } else if(mMode == 1) {
                         move = mGame.mediumComputerMove
                     } else{
-                        move = mGame.mediumComputerMove
+                        move = mGame.getHardComputerMove(lastWinner)
                     }
                     setMove(TicTacToeGame.COMPUTER_PLAYER, move)
                     winner = mGame.checkForWinner()

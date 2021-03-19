@@ -7,6 +7,8 @@ package com.example.tictactoe;
  * is X and the computer is O.
  */
 
+import android.util.Log;
+
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -186,6 +188,68 @@ public class TicTacToeGame {
     {
         int move;
 
+        // Generate random move
+        do
+        {
+            move = mRand.nextInt(BOARD_SIZE);
+        } while (mBoard[move] == HUMAN_PLAYER || mBoard[move] == COMPUTER_PLAYER);
+
+        System.out.println("Computer is moving to " + (move + 1));
+
+        mBoard[move] = COMPUTER_PLAYER;
+        return move;
+    }
+
+    public int getHardComputerMove(int firstPlayer) {
+        int move;
+
+        // First see if there's a move O can make to win
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                char curr = mBoard[i];
+                mBoard[i] = COMPUTER_PLAYER;
+                if (checkForWinner() == 3) {
+                    System.out.println("Computer is moving to " + (i + 1));
+                    return i;
+                }
+                else
+                    mBoard[i] = curr;
+            }
+        }
+
+        // See if there's a move O can make to block X from winning
+        for (int i = 0; i < BOARD_SIZE; i++) {
+            if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                char curr = mBoard[i];   // Save the current number
+                mBoard[i] = HUMAN_PLAYER;
+                if (checkForWinner() == 2) {
+                    mBoard[i] = COMPUTER_PLAYER;
+                    System.out.println("Computer is moving to " + (i + 1));
+                    return i;
+                }
+                else
+                    mBoard[i] = curr;
+            }
+        }
+
+        // Human first
+        if(firstPlayer == 0) {
+            if(mBoard[4] != HUMAN_PLAYER && mBoard[4] != COMPUTER_PLAYER) {
+                return 4;
+            }
+            if(mBoard[0] == HUMAN_PLAYER && mBoard[2] == HUMAN_PLAYER
+                    || mBoard[0] == HUMAN_PLAYER && mBoard[6] == HUMAN_PLAYER
+                    || mBoard[0] == HUMAN_PLAYER && mBoard[8] == HUMAN_PLAYER
+                    || mBoard[2] == HUMAN_PLAYER && mBoard[6] == HUMAN_PLAYER
+                    || mBoard[2] == HUMAN_PLAYER && mBoard[8] == HUMAN_PLAYER
+                    || mBoard[6] == HUMAN_PLAYER && mBoard[8] == HUMAN_PLAYER) {
+                for (int i = 1; i < BOARD_SIZE; i+=2) {
+                    if (mBoard[i] != HUMAN_PLAYER && mBoard[i] != COMPUTER_PLAYER) {
+                        return i;
+                    }
+                }
+            }
+        }
         // Generate random move
         do
         {
