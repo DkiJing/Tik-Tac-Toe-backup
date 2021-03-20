@@ -7,8 +7,6 @@ package com.example.tictactoe;
  * is X and the computer is O.
  */
 
-import android.util.Log;
-
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
