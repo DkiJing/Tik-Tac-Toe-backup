@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">井字游戏</string>
+    <string name="easy">简单</string>
+    <string name="medium">中级</string>
+    <string name="hard">困难</string>
+    <string name="user_turn_first">你先走</string>
+    <string name="computer_turn_first">安卓先走</string>
+    <string name="user_turn">到你了 (X).</string>
+    <string name="computer_turn">到安卓了</string>
+    <string name="tie_rst">平局！</string>
+    <string name="user_rst">你赢了！️</string>
+    <string name="computer_rst">安卓赢了！</string>
+    <string name="start_a_new_game">开始新的游戏</string>
+    <string name="you_wins">你赢的次数</string>
+    <string name="android_wins">安卓赢的次数</string>
+    <string name="tie">平局次数</string>
+</resources>

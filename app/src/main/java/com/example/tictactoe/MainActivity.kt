@@ -45,9 +45,9 @@ class MainActivity : AppCompatActivity() {
         }
         //---Human goes first
         if(lastWinner == 0) {
-            information.text = "You go first."
+            information.text = getString(R.string.user_turn_first)
         } else if(lastWinner == 1) {
-            information.text = "Android goes first."
+            information.text = getString(R.string.computer_turn_first)
             var move = -1
             if(mMode == 0) {
                 move = mGame.easyComputerMove
@@ -87,7 +87,7 @@ class MainActivity : AppCompatActivity() {
                 var winner = mGame.checkForWinner()
                 var move = -1
                 if (winner == 0) {
-                    information.text = "It's Android's turn"
+                    information.text = getString(R.string.computer_turn)
                     if(mMode == 0) {
                         move = mGame.easyComputerMove
                     } else if(mMode == 1) {
@@ -100,26 +100,35 @@ class MainActivity : AppCompatActivity() {
                 }
                 if (winner == 0) {
                     information.setTextColor(Color.rgb(0, 0, 0))
-                    information.text = "It's your turn (X)."
+                    information.text = getString(R.string.user_turn)
                 }
                 else if (winner == 1) {
                     information.setTextColor(Color.rgb(0, 0, 200))
                     lastWinner = (0..1).random()
-                    information.text = "It's a tie!"
+                    information.text = getString(R.string.tie_rst)
+                    player_wins = player_score.text.toString().toInt()
+                    computer_wins = computer_score.text.toString().toInt()
+                    ties = tie_score.text.toString().toInt()
                     ties += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
                     lastWinner = 0
-                    information.text = "You won!"
+                    information.text = getString(R.string.user_rst)
+                    player_wins = player_score.text.toString().toInt()
+                    computer_wins = computer_score.text.toString().toInt()
+                    ties = tie_score.text.toString().toInt()
                     player_wins += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
                     lastWinner = 1
-                    information.text = "Android won!"
+                    information.text = getString(R.string.computer_rst)
+                    player_wins = player_score.text.toString().toInt()
+                    computer_wins = computer_score.text.toString().toInt()
+                    ties = tie_score.text.toString().toInt()
                     computer_wins += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
@@ -142,17 +151,14 @@ class MainActivity : AppCompatActivity() {
     fun easyMode(view: View) {
         mMode = 0
         startNewGame()
-        Toast.makeText(this, "Easy mode is selected", Toast.LENGTH_SHORT).show()
     }
     fun mediumMode(view: View) {
         mMode = 1
         startNewGame()
-        Toast.makeText(this, "Medium mode is selected", Toast.LENGTH_SHORT).show()
     }
     fun hardMode(view: View) {
         mMode = 2
         startNewGame()
-        Toast.makeText(this, "Hard mode is selected", Toast.LENGTH_SHORT).show()
     }
 
     fun savePreferences(p: String?, a: String?, t: String) {
