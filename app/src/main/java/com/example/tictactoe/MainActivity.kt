@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
@@ -173,5 +175,28 @@ class MainActivity : AppCompatActivity() {
         player_score.text = pref.getString("player", "0")
         computer_score.text = pref.getString("android", "0")
         tie_score.text = pref.getString("tie", "0")
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        // Inflate the menu to use in the action bar
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu_options, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle presses on the action bar menu items
+        when (item.itemId) {
+            R.id.action_settings -> {
+                Toast.makeText(applicationContext, "Settings Button Clicked !",
+                        Toast.LENGTH_LONG).show()
+                return true
+            }
+            R.id.menu_exit -> {
+                finish()
+                return true
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

@@ -14,4 +14,6 @@
     <string name="you_wins">YOU WINS</string>
     <string name="android_wins">ANDROID WINS</string>
     <string name="tie">TIE</string>
+    <string name="menu_settings">Settings</string>
+    <string name="exit">Exit</string>
 </resources>
