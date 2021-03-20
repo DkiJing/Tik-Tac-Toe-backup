@@ -1,5 +1,6 @@
 package com.example.tictactoe
 
+import android.content.Context
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
     var mMode = 1
 
     var lastWinner = 0
+
+    var player_wins = 0
+    var computer_wins = 0
+    var ties = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             }
             setMove(TicTacToeGame.COMPUTER_PLAYER, move)
         }
+        loadPreferences()
     }
 
     //--- OnClickListener for Restart a New Game Button
@@ -100,16 +106,22 @@ class MainActivity : AppCompatActivity() {
                     information.setTextColor(Color.rgb(0, 0, 200))
                     lastWinner = (0..1).random()
                     information.text = "It's a tie!"
+                    ties += 1
+                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
                     lastWinner = 0
                     information.text = "You won!"
+                    player_wins += 1
+                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
                     lastWinner = 1
                     information.text = "Android won!"
+                    computer_wins += 1
+                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
                     mGameOver = true
                 }
             }
@@ -141,5 +153,19 @@ class MainActivity : AppCompatActivity() {
         mMode = 2
         startNewGame()
         Toast.makeText(this, "Hard mode is selected", Toast.LENGTH_SHORT).show()
+    }
+
+    fun savePreferences(p: String?, a: String?, t: String) {
+        val pref = getSharedPreferences("TICTACTOE", Context.MODE_PRIVATE)
+        pref.edit().putString("player", p).apply()
+        pref.edit().putString("android", a).apply()
+        pref.edit().putString("tie", t).apply()
+    }
+
+    fun loadPreferences() {
+        val pref = getSharedPreferences("TICTACTOE", Context.MODE_PRIVATE)
+        player_score.text = pref.getString("player", "0")
+        computer_score.text = pref.getString("android", "0")
+        tie_score.text = pref.getString("tie", "0")
     }
 }
