@@ -16,4 +16,12 @@
     <string name="tie">平局次数</string>
     <string name="menu_settings">设置</string>
     <string name="exit">退出</string>
+    <string name="select_playing_mode">请选择游戏模式</string>
+    <string name="one_player">单人模式</string>
+    <string name="two_players">双人模式</string>
+    <string name="audio">音效</string>
+    <string name="turn_on">开启</string>
+    <string name="turn_off">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="apply">确定</string>
 </resources>

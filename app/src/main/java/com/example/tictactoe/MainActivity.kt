@@ -1,14 +1,19 @@
 package com.example.tictactoe
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Button
-import android.widget.Toast
+import android.widget.*
+import com.afollestad.materialdialogs.MaterialDialog
+import com.afollestad.materialdialogs.customview.customView
+import com.afollestad.materialdialogs.customview.getCustomView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -21,19 +26,20 @@ class MainActivity : AppCompatActivity() {
     // Game Over
     var mGameOver = false
 
-    var mMode = 1
-
-    var lastWinner = 0
-
-    var player_wins = 0
-    var computer_wins = 0
-    var ties = 0
+    private lateinit var settpref: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+    private var mMode = 1
+    private var lastWinner = 0
+    private var player_wins = 0
+    private var computer_wins = 0
+    private var ties = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         // Buttons making up the board
         mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
+        initSettingPrefferences()
         startNewGame()
     }
 
@@ -163,15 +169,21 @@ class MainActivity : AppCompatActivity() {
         startNewGame()
     }
 
-    fun savePreferences(p: String?, a: String?, t: String) {
-        val pref = getSharedPreferences("TICTACTOE", Context.MODE_PRIVATE)
+    @SuppressLint("CommitPrefEdits")
+    private fun initSettingPrefferences() {
+        settpref = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
+        editor = settpref.edit()
+    }
+
+    private fun savePreferences(p: String?, a: String?, t: String) {
+        val pref = getSharedPreferences("SCORE", Context.MODE_PRIVATE)
         pref.edit().putString("player", p).apply()
         pref.edit().putString("android", a).apply()
         pref.edit().putString("tie", t).apply()
     }
 
-    fun loadPreferences() {
-        val pref = getSharedPreferences("TICTACTOE", Context.MODE_PRIVATE)
+    private fun loadPreferences() {
+        val pref = getSharedPreferences("SCORE", Context.MODE_PRIVATE)
         player_score.text = pref.getString("player", "0")
         computer_score.text = pref.getString("android", "0")
         tie_score.text = pref.getString("tie", "0")
@@ -188,8 +200,7 @@ class MainActivity : AppCompatActivity() {
         // Handle presses on the action bar menu items
         when (item.itemId) {
             R.id.action_settings -> {
-                Toast.makeText(applicationContext, "Settings Button Clicked !",
-                        Toast.LENGTH_LONG).show()
+                showSettings()
                 return true
             }
             R.id.menu_exit -> {
@@ -198,5 +209,52 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    @SuppressLint("ShowToast")
+    private fun showSettings() {
+        val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
+        val mode = settpref.getString("mode", "one")
+        val audio = settpref.getString("audio", "off")
+        // playing mode settings initialization
+        if(mode == "one") {
+            dialog.findViewById<RadioGroup>(R.id.play_mode_group).check(R.id.one_player)
+        } else {
+            dialog.findViewById<RadioGroup>(R.id.play_mode_group).check(R.id.two_players)
+        }
+        // audio settings initialization
+        if(audio == "on") {
+            dialog.findViewById<RadioGroup>(R.id.audio_group).check(R.id.turn_on_audio)
+        } else {
+            dialog.findViewById<RadioGroup>(R.id.audio_group).check(R.id.turn_off_audio)
+        }
+        // get new preferences
+        // Apply
+        dialog.findViewById<TextView>(R.id.positive_button).setOnClickListener {
+            var selectedMode = ""
+            var selectedAudio = ""
+            if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
+                    dialog.findViewById<RadioButton>(R.id.one_player).id
+            ) {
+                selectedMode = "one"
+            } else {
+                selectedMode = "two"
+            }
+            if(dialog.findViewById<RadioGroup>(R.id.audio_group).checkedRadioButtonId ==
+                dialog.findViewById<RadioButton>(R.id.turn_on_audio).id
+            ) {
+                selectedAudio = "on"
+            } else {
+                selectedAudio = "off"
+            }
+            editor.putString("mode", selectedMode).apply()
+            editor.putString("audio", selectedAudio).apply()
+            dialog.dismiss()
+        }
+        // Cancel
+        dialog.findViewById<TextView>(R.id.negative_button).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.show()
     }
 }
