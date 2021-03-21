@@ -2,6 +2,7 @@ package com.example.tictactoe
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
@@ -118,6 +119,7 @@ class MainActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     ties += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
@@ -128,6 +130,7 @@ class MainActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     player_wins += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
@@ -138,6 +141,7 @@ class MainActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     computer_wins += 1
                     savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 }
             }
@@ -210,7 +214,6 @@ class MainActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    @SuppressLint("ShowToast")
     private fun showSettings() {
         val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
         val mode = settpref.getString("mode", "one")
@@ -224,25 +227,21 @@ class MainActivity : AppCompatActivity() {
         // get new preferences
         // Apply
         dialog.findViewById<TextView>(R.id.positive_button).setOnClickListener {
-            var selectedMode = ""
-            var selectedAudio = ""
-            if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
+            val selectedMode = if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
                     dialog.findViewById<RadioButton>(R.id.one_player).id
-            ) {
-                selectedMode = "one"
-            } else {
-                selectedMode = "two"
-            }
-            if(dialog.findViewById<RadioGroup>(R.id.audio_group).checkedRadioButtonId ==
-                dialog.findViewById<RadioButton>(R.id.turn_on_audio).id
-            ) {
-                selectedAudio = "on"
-            } else {
-                selectedAudio = "off"
+            ) "one" else "two"
+
+            val selectedAudio = if(dialog.findViewById<RadioGroup>(R.id.audio_group).checkedRadioButtonId ==
+                    dialog.findViewById<RadioButton>(R.id.turn_on_audio).id
+            ) "on" else "off"
+            dialog.dismiss()
+            if(selectedMode == "two") {
+                intent = Intent(this, TwoPlayerActivity::class.java)
+                startActivity(intent)
+                finish()
             }
             editor.putString("mode", selectedMode).apply()
             editor.putString("audio", selectedAudio).apply()
-            dialog.dismiss()
         }
         // Cancel
         dialog.findViewById<TextView>(R.id.negative_button).setOnClickListener {

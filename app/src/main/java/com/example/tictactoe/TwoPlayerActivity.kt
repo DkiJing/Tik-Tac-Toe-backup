@@ -2,11 +2,11 @@ package com.example.tictactoe
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -126,6 +126,7 @@ class TwoPlayerActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     ties += 1
                     savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
@@ -136,6 +137,7 @@ class TwoPlayerActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     x_wins += 1
                     savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
@@ -146,6 +148,7 @@ class TwoPlayerActivity : AppCompatActivity() {
                     ties = tie_score.text.toString().toInt()
                     o_wins += 1
                     savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    loadPreferences()
                     mGameOver = true
                 }
             }
@@ -158,10 +161,8 @@ class TwoPlayerActivity : AppCompatActivity() {
         mBoardButtons[location]!!.text = player.toString()
         if(player == TicTacToeGame.HUMAN_PLAYER) {
             mBoardButtons[location]!!.setTextColor(Color.parseColor("#ff0000"))
-            Toast.makeText(this, "human", Toast.LENGTH_SHORT).show()
         } else {
             mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
-            Toast.makeText(this, "computer", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -187,7 +188,6 @@ class TwoPlayerActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    @SuppressLint("ShowToast")
     private fun showSettings() {
         val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
         val mode = settpref
@@ -201,25 +201,20 @@ class TwoPlayerActivity : AppCompatActivity() {
         // get new preferences
         // Apply
         dialog.findViewById<TextView>(R.id.positive_button).setOnClickListener {
-            var selectedMode = ""
-            var selectedAudio = ""
-            if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
-                dialog.findViewById<RadioButton>(R.id.one_player).id
-            ) {
-                selectedMode = "one"
-            } else {
-                selectedMode = "two"
-            }
-            if(dialog.findViewById<RadioGroup>(R.id.audio_group).checkedRadioButtonId ==
-                dialog.findViewById<RadioButton>(R.id.turn_on_audio).id
-            ) {
-                selectedAudio = "on"
-            } else {
-                selectedAudio = "off"
+            val selectedMode = if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
+                    dialog.findViewById<RadioButton>(R.id.one_player).id
+            ) "one" else "two"
+            val selectedAudio = if(dialog.findViewById<RadioGroup>(R.id.audio_group).checkedRadioButtonId ==
+                    dialog.findViewById<RadioButton>(R.id.turn_on_audio).id
+            ) "on" else "off"
+            dialog.dismiss()
+            if(selectedMode == "one") {
+                intent = Intent(this, MainActivity::class.java)
+                startActivity(intent)
+                finish()
             }
             editor.putString("mode", selectedMode).apply()
             editor.putString("audio", selectedAudio).apply()
-            dialog.dismiss()
         }
         // Cancel
         dialog.findViewById<TextView>(R.id.negative_button).setOnClickListener {
