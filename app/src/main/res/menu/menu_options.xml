@@ -9,6 +9,11 @@
         android:title="@string/menu_settings"
         app:showAsAction="never" />
     <item
+        android:id="@+id/action_about"
+        android:orderInCategory="100"
+        android:title="@string/wiki"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_exit"
         android:title="@string/exit"
         app:showAsAction="ifRoom" />

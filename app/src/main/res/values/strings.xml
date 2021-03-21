@@ -32,4 +32,6 @@
     <string name="x_turn">It\'s X\'s turn</string>
     <string name="o_rst">O won!</string>
     <string name="x_rst">X won!</string>
+    <string name="wiki">Wiki</string>
+    <string name="wiki_uri">https://en.wikipedia.org/wiki/Tic-tac-toe</string>
 </resources>

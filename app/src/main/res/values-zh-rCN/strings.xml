@@ -32,4 +32,6 @@
     <string name="x_turn">到X了</string>
     <string name="o_rst">O赢了！</string>
     <string name="x_rst">X赢了！</string>
+    <string name="wiki">维基百科</string>
+    <string name="wiki_uri">https://zh.wikipedia.org/wiki/%E4%BA%95%E5%AD%97%E6%A3%8B</string>
 </resources>

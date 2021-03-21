@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -180,6 +181,10 @@ class TwoPlayerActivity : AppCompatActivity() {
                 showSettings()
                 return true
             }
+            R.id.action_about -> {
+                openWebPage(getString(R.string.wiki_uri), this)
+                return true
+            }
             R.id.menu_exit -> {
                 finish()
                 return true
@@ -221,5 +226,11 @@ class TwoPlayerActivity : AppCompatActivity() {
             dialog.dismiss()
         }
         dialog.show()
+    }
+
+    fun openWebPage(urls: String, context : Context) {
+        val uris = Uri.parse(urls)
+        val intents = Intent(Intent.ACTION_VIEW, uris)
+        context.startActivity(intents)
     }
 }
