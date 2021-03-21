@@ -24,4 +24,12 @@
     <string name="turn_off">Turn off</string>
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
+    <string name="o_wins">O wins</string>
+    <string name="x_wins">X wins</string>
+    <string name="o_turns_first">O goes first</string>
+    <string name="x_turns_first">X goes first</string>
+    <string name="o_turn">It\'s O\'s turn</string>
+    <string name="x_turn">It\'s X\'s turn</string>
+    <string name="o_rst">O won!</string>
+    <string name="x_rst">X won!</string>
 </resources>

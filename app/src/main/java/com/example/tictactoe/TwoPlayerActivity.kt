@@ -13,9 +13,10 @@ import android.view.View
 import android.widget.*
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
-import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.activity_two_player.*
 
-class MainActivity : AppCompatActivity() {
+class TwoPlayerActivity : AppCompatActivity() {
+
     // Represents the internal state of the game
     var mGame = TicTacToeGame()
 
@@ -27,16 +28,15 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var settpref: SharedPreferences
     lateinit var editor: SharedPreferences.Editor
-    private var mMode = 1
     private var lastWinner = 0
-    private var player_wins = 0
-    private var computer_wins = 0
+    private var o_wins = 0
+    private var x_wins = 0
     private var ties = 0
+    private var hasMoved = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        // Buttons making up the board
+        setContentView(R.layout.activity_two_player)
         mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
         initSettingPrefferences()
         startNewGame()
@@ -50,27 +50,33 @@ class MainActivity : AppCompatActivity() {
             mBoardButtons[i]!!.text = ""
             mBoardButtons[i]!!.isEnabled = true
         }
-        //---Human goes first
-        if(lastWinner == 0) {
-            information.text = getString(R.string.user_turn_first)
-        } else if(lastWinner == 1) {
-            information.text = getString(R.string.computer_turn_first)
-            var move = -1
-            if(mMode == 0) {
-                move = mGame.easyComputerMove
-            } else if(mMode == 1) {
-                move = mGame.mediumComputerMove
-            } else{
-                move = mGame.getHardComputerMove(lastWinner)
-            }
-            setMove(TicTacToeGame.COMPUTER_PLAYER, move)
-        }
+        information.text = getString(R.string.x_turns_first)
         loadPreferences()
     }
 
     //--- OnClickListener for Restart a New Game Button
     fun newGame(view: View) {
         button_restart.setOnClickListener { startNewGame() }
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    private fun initSettingPrefferences() {
+        settpref = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
+        editor = settpref.edit()
+    }
+
+    private fun savePreferences(x: String?, o: String?, t: String) {
+        val pref = getSharedPreferences("TWOPLAYERSCORE", Context.MODE_PRIVATE)
+        pref.edit().putString("x", x).apply()
+        pref.edit().putString("o", o).apply()
+        pref.edit().putString("tie", t).apply()
+    }
+
+    private fun loadPreferences() {
+        val pref = getSharedPreferences("TWOPLAYERSCORE", Context.MODE_PRIVATE)
+        x_score.text = pref.getString("x", "0")
+        o_score.text = pref.getString("o", "0")
+        tie_score.text = pref.getString("tie", "0")
     }
 
     // multiple button click method
@@ -90,54 +96,56 @@ class MainActivity : AppCompatActivity() {
         }
         if(mGameOver == false) {
             if(mBoardButtons[location]!!.isEnabled) {
-                setMove(TicTacToeGame.HUMAN_PLAYER, location)
                 var winner = mGame.checkForWinner()
-                var move = -1
                 if (winner == 0) {
-                    information.text = getString(R.string.computer_turn)
-                    if(mMode == 0) {
-                        move = mGame.easyComputerMove
-                    } else if(mMode == 1) {
-                        move = mGame.mediumComputerMove
-                    } else{
-                        move = mGame.getHardComputerMove(lastWinner)
+                    if (hasMoved == true) {
+                        if(information.text == getString(R.string.o_turn)) {
+                            setMove(TicTacToeGame.COMPUTER_PLAYER, location)
+                            information.text = getString(R.string.x_turn)
+                            hasMoved = false
+                        } else if(information.text == getString(R.string.x_turn)) {
+                            setMove(TicTacToeGame.HUMAN_PLAYER, location)
+                            information.text = getString(R.string.o_turn)
+                            hasMoved = false
+                        }
                     }
-                    setMove(TicTacToeGame.COMPUTER_PLAYER, move)
-                    winner = mGame.checkForWinner()
+                    if (information.text == getString(R.string.x_turns_first)) {
+                        setMove(TicTacToeGame.HUMAN_PLAYER, location)
+                        information.text = getString(R.string.o_turn)
+                        information.setTextColor(Color.rgb(0, 0, 0))
+                    }
+                    hasMoved = true
                 }
-                if (winner == 0) {
-                    information.setTextColor(Color.rgb(0, 0, 0))
-                    information.text = getString(R.string.user_turn)
-                }
-                else if (winner == 1) {
+                winner = mGame.checkForWinner()
+                if (winner == 1) {
                     information.setTextColor(Color.rgb(0, 0, 200))
                     lastWinner = (0..1).random()
                     information.text = getString(R.string.tie_rst)
-                    player_wins = player_score.text.toString().toInt()
-                    computer_wins = computer_score.text.toString().toInt()
+                    x_wins = x_score.text.toString().toInt()
+                    o_wins = o_score.text.toString().toInt()
                     ties = tie_score.text.toString().toInt()
                     ties += 1
-                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
                     lastWinner = 0
-                    information.text = getString(R.string.user_rst)
-                    player_wins = player_score.text.toString().toInt()
-                    computer_wins = computer_score.text.toString().toInt()
+                    information.text = getString(R.string.x_rst)
+                    x_wins = x_score.text.toString().toInt()
+                    o_wins = o_score.text.toString().toInt()
                     ties = tie_score.text.toString().toInt()
-                    player_wins += 1
-                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    x_wins += 1
+                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
                     mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
                     lastWinner = 1
-                    information.text = getString(R.string.computer_rst)
-                    player_wins = player_score.text.toString().toInt()
-                    computer_wins = computer_score.text.toString().toInt()
+                    information.text = getString(R.string.o_rst)
+                    x_wins = x_score.text.toString().toInt()
+                    o_wins = o_score.text.toString().toInt()
                     ties = tie_score.text.toString().toInt()
-                    computer_wins += 1
-                    savePreferences(player_wins.toString(), computer_wins.toString(), ties.toString())
+                    o_wins += 1
+                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
                     mGameOver = true
                 }
             }
@@ -150,42 +158,11 @@ class MainActivity : AppCompatActivity() {
         mBoardButtons[location]!!.text = player.toString()
         if(player == TicTacToeGame.HUMAN_PLAYER) {
             mBoardButtons[location]!!.setTextColor(Color.parseColor("#ff0000"))
+            Toast.makeText(this, "human", Toast.LENGTH_SHORT).show()
         } else {
             mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
+            Toast.makeText(this, "computer", Toast.LENGTH_SHORT).show()
         }
-    }
-
-    fun easyMode(view: View) {
-        mMode = 0
-        startNewGame()
-    }
-    fun mediumMode(view: View) {
-        mMode = 1
-        startNewGame()
-    }
-    fun hardMode(view: View) {
-        mMode = 2
-        startNewGame()
-    }
-
-    @SuppressLint("CommitPrefEdits")
-    private fun initSettingPrefferences() {
-        settpref = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
-        editor = settpref.edit()
-    }
-
-    private fun savePreferences(p: String?, a: String?, t: String) {
-        val pref = getSharedPreferences("SCORE", Context.MODE_PRIVATE)
-        pref.edit().putString("player", p).apply()
-        pref.edit().putString("android", a).apply()
-        pref.edit().putString("tie", t).apply()
-    }
-
-    private fun loadPreferences() {
-        val pref = getSharedPreferences("SCORE", Context.MODE_PRIVATE)
-        player_score.text = pref.getString("player", "0")
-        computer_score.text = pref.getString("android", "0")
-        tie_score.text = pref.getString("tie", "0")
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -213,7 +190,7 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("ShowToast")
     private fun showSettings() {
         val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
-        val mode = settpref.getString("mode", "one")
+        val mode = settpref
         val audio = settpref.getString("audio", "off")
         // audio settings initialization
         if(audio == "on") {
@@ -227,7 +204,7 @@ class MainActivity : AppCompatActivity() {
             var selectedMode = ""
             var selectedAudio = ""
             if(dialog.findViewById<RadioGroup>(R.id.play_mode_group).checkedRadioButtonId ==
-                    dialog.findViewById<RadioButton>(R.id.one_player).id
+                dialog.findViewById<RadioButton>(R.id.one_player).id
             ) {
                 selectedMode = "one"
             } else {

@@ -24,4 +24,12 @@
     <string name="turn_off">关闭</string>
     <string name="cancel">取消</string>
     <string name="apply">确定</string>
+    <string name="o_wins">O赢的次数</string>
+    <string name="x_wins">X赢的次数</string>
+    <string name="o_turns_first">O先走</string>
+    <string name="x_turns_first">X先走</string>
+    <string name="o_turn">到O了</string>
+    <string name="x_turn">到X了</string>
+    <string name="o_rst">O赢了！</string>
+    <string name="x_rst">X赢了！</string>
 </resources>
