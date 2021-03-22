@@ -12,46 +12,54 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.*
+import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_two_player.*
+import kotlinx.android.synthetic.main.activity_two_player.button0
+import kotlinx.android.synthetic.main.activity_two_player.button1
+import kotlinx.android.synthetic.main.activity_two_player.button2
+import kotlinx.android.synthetic.main.activity_two_player.button3
+import kotlinx.android.synthetic.main.activity_two_player.button4
+import kotlinx.android.synthetic.main.activity_two_player.button5
+import kotlinx.android.synthetic.main.activity_two_player.button6
+import kotlinx.android.synthetic.main.activity_two_player.button7
+import kotlinx.android.synthetic.main.activity_two_player.button8
+import kotlinx.android.synthetic.main.activity_two_player.button_restart
+import kotlinx.android.synthetic.main.activity_two_player.information
+import kotlinx.android.synthetic.main.activity_two_player.tie_score
 
 class TwoPlayerActivity : AppCompatActivity() {
-
-    // Represents the internal state of the game
-    var mGame = TicTacToeGame()
-
-    // Buttons making up the board
-    private lateinit var mBoardButtons: Array<Button?>
-
-    // Game Over
-    var mGameOver = false
+    val model: TwoPlayerViewModel by viewModels()
 
     lateinit var settpref: SharedPreferences
     lateinit var editor: SharedPreferences.Editor
-    private var lastWinner = 0
-    private var o_wins = 0
-    private var x_wins = 0
-    private var ties = 0
-    private var hasMoved = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_two_player)
-        mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
+        model.mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
+        model.loadBoard()
+        information.text = model.mInfo
         initSettingPrefferences()
-        startNewGame()
+        model.mCreatedCounter += 1
+        if(model.mCreatedCounter <= 1) {
+            startNewGame()
+        }
     }
 
     //--- Set up the game board.
     fun startNewGame() {
-        mGameOver = false
-        mGame.clearBoard()
-        for(i in mBoardButtons.indices) {
-            mBoardButtons[i]!!.text = ""
-            mBoardButtons[i]!!.isEnabled = true
+        model.mGameOver = false
+        model.mGame.clearBoard()
+        for(i in model.mBoardButtons.indices) {
+            model.mBoardButtons[i]!!.text = ""
+            model.mBoardButtons[i]!!.isEnabled = true
         }
         information.text = getString(R.string.x_turns_first)
+        model.saveBoard()
+        model.mInfo = information.text as String
         loadPreferences()
     }
 
@@ -95,19 +103,19 @@ class TwoPlayerActivity : AppCompatActivity() {
             R.id.button7 -> location = 7
             R.id.button8 -> location = 8
         }
-        if(mGameOver == false) {
-            if(mBoardButtons[location]!!.isEnabled) {
-                var winner = mGame.checkForWinner()
+        if(model.mGameOver == false) {
+            if(model.mBoardButtons[location]!!.isEnabled) {
+                var winner = model.mGame.checkForWinner()
                 if (winner == 0) {
-                    if (hasMoved == true) {
+                    if (model.hasMoved == true) {
                         if(information.text == getString(R.string.o_turn)) {
                             setMove(TicTacToeGame.COMPUTER_PLAYER, location)
                             information.text = getString(R.string.x_turn)
-                            hasMoved = false
+                            model.hasMoved = false
                         } else if(information.text == getString(R.string.x_turn)) {
                             setMove(TicTacToeGame.HUMAN_PLAYER, location)
                             information.text = getString(R.string.o_turn)
-                            hasMoved = false
+                            model.hasMoved = false
                         }
                     }
                     if (information.text == getString(R.string.x_turns_first)) {
@@ -115,55 +123,57 @@ class TwoPlayerActivity : AppCompatActivity() {
                         information.text = getString(R.string.o_turn)
                         information.setTextColor(Color.rgb(0, 0, 0))
                     }
-                    hasMoved = true
+                    model.hasMoved = true
                 }
-                winner = mGame.checkForWinner()
+                winner = model.mGame.checkForWinner()
                 if (winner == 1) {
                     information.setTextColor(Color.rgb(0, 0, 200))
-                    lastWinner = (0..1).random()
+                    model.lastWinner = (0..1).random()
                     information.text = getString(R.string.tie_rst)
-                    x_wins = x_score.text.toString().toInt()
-                    o_wins = o_score.text.toString().toInt()
-                    ties = tie_score.text.toString().toInt()
-                    ties += 1
-                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    model.x_wins = x_score.text.toString().toInt()
+                    model.o_wins = o_score.text.toString().toInt()
+                    model.ties = tie_score.text.toString().toInt()
+                    model.ties += 1
+                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
                     loadPreferences()
-                    mGameOver = true
+                    model.mGameOver = true
                 } else if (winner == 2) {
                     information.setTextColor(Color.rgb(0, 200, 0))
-                    lastWinner = 0
+                    model.lastWinner = 0
                     information.text = getString(R.string.x_rst)
-                    x_wins = x_score.text.toString().toInt()
-                    o_wins = o_score.text.toString().toInt()
-                    ties = tie_score.text.toString().toInt()
-                    x_wins += 1
-                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    model.x_wins = x_score.text.toString().toInt()
+                    model.o_wins = o_score.text.toString().toInt()
+                    model.ties = tie_score.text.toString().toInt()
+                    model.x_wins += 1
+                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
                     loadPreferences()
-                    mGameOver = true
+                    model.mGameOver = true
                 } else if (winner == 3) {
                     information.setTextColor(Color.rgb(200, 0, 0))
-                    lastWinner = 1
+                    model.lastWinner = 1
                     information.text = getString(R.string.o_rst)
-                    x_wins = x_score.text.toString().toInt()
-                    o_wins = o_score.text.toString().toInt()
-                    ties = tie_score.text.toString().toInt()
-                    o_wins += 1
-                    savePreferences(x_wins.toString(), o_wins.toString(), ties.toString())
+                    model.x_wins = x_score.text.toString().toInt()
+                    model.o_wins = o_score.text.toString().toInt()
+                    model.ties = tie_score.text.toString().toInt()
+                    model.o_wins += 1
+                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
                     loadPreferences()
-                    mGameOver = true
+                    model.mGameOver = true
                 }
             }
+            model.saveBoard()
+            model.mInfo = information.text as String
         }
     }
 
     private fun setMove(player: Char, location: Int) {
-        mGame!!.setMove(player, location)
-        mBoardButtons[location]!!.isEnabled = false
-        mBoardButtons[location]!!.text = player.toString()
+        model.mGame!!.setMove(player, location)
+        model.mBoardButtons[location]!!.isEnabled = false
+        model.mBoardButtons[location]!!.text = player.toString()
         if(player == TicTacToeGame.HUMAN_PLAYER) {
-            mBoardButtons[location]!!.setTextColor(Color.parseColor("#ff0000"))
+            model.mBoardButtons[location]!!.setTextColor(Color.parseColor("#ff0000"))
         } else {
-            mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
+            model.mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
         }
     }
 

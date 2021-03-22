@@ -52,7 +52,7 @@
                     android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/you_wins" />
+                    android:text="@string/x_wins" />
                 <TextView
                     android:id="@+id/x_score"
                     android:layout_width="100dp"
@@ -66,7 +66,7 @@
                     android:layout_width="130dp"
                     android:layout_height="wrap_content"
                     android:gravity="center_horizontal"
-                    android:text="@string/android_wins" />
+                    android:text="@string/o_wins" />
                 <TextView
                     android:id="@+id/o_score"
                     android:layout_width="131dp"
