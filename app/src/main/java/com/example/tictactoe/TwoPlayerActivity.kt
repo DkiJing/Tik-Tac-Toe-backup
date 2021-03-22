@@ -15,26 +15,13 @@ import android.widget.*
 import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.activity_two_player.*
-import kotlinx.android.synthetic.main.activity_two_player.button0
-import kotlinx.android.synthetic.main.activity_two_player.button1
-import kotlinx.android.synthetic.main.activity_two_player.button2
-import kotlinx.android.synthetic.main.activity_two_player.button3
-import kotlinx.android.synthetic.main.activity_two_player.button4
-import kotlinx.android.synthetic.main.activity_two_player.button5
-import kotlinx.android.synthetic.main.activity_two_player.button6
-import kotlinx.android.synthetic.main.activity_two_player.button7
-import kotlinx.android.synthetic.main.activity_two_player.button8
-import kotlinx.android.synthetic.main.activity_two_player.button_restart
-import kotlinx.android.synthetic.main.activity_two_player.information
-import kotlinx.android.synthetic.main.activity_two_player.tie_score
 
 class TwoPlayerActivity : AppCompatActivity() {
-    val model: TwoPlayerViewModel by viewModels()
+    private val model: TwoPlayerViewModel by viewModels()
 
-    lateinit var settpref: SharedPreferences
-    lateinit var editor: SharedPreferences.Editor
+    private lateinit var settpref: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +30,7 @@ class TwoPlayerActivity : AppCompatActivity() {
         model.loadBoard()
         information.text = model.mInfo
         initSettingPrefferences()
+        loadPreferences()
         model.mCreatedCounter += 1
         if(model.mCreatedCounter <= 1) {
             startNewGame()
@@ -50,7 +38,7 @@ class TwoPlayerActivity : AppCompatActivity() {
     }
 
     //--- Set up the game board.
-    fun startNewGame() {
+    private fun startNewGame() {
         model.mGameOver = false
         model.mGame.clearBoard()
         for(i in model.mBoardButtons.indices) {
@@ -103,11 +91,11 @@ class TwoPlayerActivity : AppCompatActivity() {
             R.id.button7 -> location = 7
             R.id.button8 -> location = 8
         }
-        if(model.mGameOver == false) {
+        if(!model.mGameOver) {
             if(model.mBoardButtons[location]!!.isEnabled) {
                 var winner = model.mGame.checkForWinner()
                 if (winner == 0) {
-                    if (model.hasMoved == true) {
+                    if (model.hasMoved) {
                         if(information.text == getString(R.string.o_turn)) {
                             setMove(TicTacToeGame.COMPUTER_PLAYER, location)
                             information.text = getString(R.string.x_turn)
@@ -126,39 +114,43 @@ class TwoPlayerActivity : AppCompatActivity() {
                     model.hasMoved = true
                 }
                 winner = model.mGame.checkForWinner()
-                if (winner == 1) {
-                    information.setTextColor(Color.rgb(0, 0, 200))
-                    model.lastWinner = (0..1).random()
-                    information.text = getString(R.string.tie_rst)
-                    model.x_wins = x_score.text.toString().toInt()
-                    model.o_wins = o_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.ties += 1
-                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
-                } else if (winner == 2) {
-                    information.setTextColor(Color.rgb(0, 200, 0))
-                    model.lastWinner = 0
-                    information.text = getString(R.string.x_rst)
-                    model.x_wins = x_score.text.toString().toInt()
-                    model.o_wins = o_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.x_wins += 1
-                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
-                } else if (winner == 3) {
-                    information.setTextColor(Color.rgb(200, 0, 0))
-                    model.lastWinner = 1
-                    information.text = getString(R.string.o_rst)
-                    model.x_wins = x_score.text.toString().toInt()
-                    model.o_wins = o_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.o_wins += 1
-                    savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
+                when (winner) {
+                    1 -> {
+                        information.setTextColor(Color.rgb(0, 0, 200))
+                        model.lastWinner = (0..1).random()
+                        information.text = getString(R.string.tie_rst)
+                        model.x_wins = x_score.text.toString().toInt()
+                        model.o_wins = o_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.ties += 1
+                        savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
+                    2 -> {
+                        information.setTextColor(Color.rgb(0, 200, 0))
+                        model.lastWinner = 0
+                        information.text = getString(R.string.x_rst)
+                        model.x_wins = x_score.text.toString().toInt()
+                        model.o_wins = o_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.x_wins += 1
+                        savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
+                    3 -> {
+                        information.setTextColor(Color.rgb(200, 0, 0))
+                        model.lastWinner = 1
+                        information.text = getString(R.string.o_rst)
+                        model.x_wins = x_score.text.toString().toInt()
+                        model.o_wins = o_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.o_wins += 1
+                        savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
                 }
             }
             model.saveBoard()
@@ -167,7 +159,7 @@ class TwoPlayerActivity : AppCompatActivity() {
     }
 
     private fun setMove(player: Char, location: Int) {
-        model.mGame!!.setMove(player, location)
+        model.mGame.setMove(player, location)
         model.mBoardButtons[location]!!.isEnabled = false
         model.mBoardButtons[location]!!.text = player.toString()
         if(player == TicTacToeGame.HUMAN_PLAYER) {
@@ -205,7 +197,6 @@ class TwoPlayerActivity : AppCompatActivity() {
 
     private fun showSettings() {
         val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
-        val mode = settpref
         val audio = settpref.getString("audio", "off")
         // audio settings initialization
         if(audio == "on") {
@@ -238,7 +229,7 @@ class TwoPlayerActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun openWebPage(urls: String, context : Context) {
+    private fun openWebPage(urls: String, context : Context) {
         val uris = Uri.parse(urls)
         val intents = Intent(Intent.ACTION_VIEW, uris)
         context.startActivity(intents)

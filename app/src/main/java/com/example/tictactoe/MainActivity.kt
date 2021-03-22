@@ -18,10 +18,10 @@ import com.afollestad.materialdialogs.customview.customView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    val model: BoardViewModel by viewModels()
+    private val model: BoardViewModel by viewModels()
 
-    lateinit var settpref: SharedPreferences
-    lateinit var editor: SharedPreferences.Editor
+    private lateinit var settpref: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     //--- Set up the game board.
-    fun startNewGame() {
+    private fun startNewGame() {
         model.mGameOver = false
         model.mGame.clearBoard()
         for(i in model.mBoardButtons.indices) {
@@ -52,12 +52,16 @@ class MainActivity : AppCompatActivity() {
         } else if(model.lastWinner == 1) {
             information.text = getString(R.string.computer_turn_first)
             var move = -1
-            if(model.mMode == 0) {
-                move = model.mGame.easyComputerMove
-            } else if(model.mMode == 1) {
-                move = model.mGame.mediumComputerMove
-            } else if(model.mMode == 2){
-                move = model.mGame.getHardComputerMove(model.lastWinner)
+            when (model.mMode) {
+                0 -> {
+                    move = model.mGame.easyComputerMove
+                }
+                1 -> {
+                    move = model.mGame.mediumComputerMove
+                }
+                2 -> {
+                    move = model.mGame.getHardComputerMove(model.lastWinner)
+                }
             }
             setMove(TicTacToeGame.COMPUTER_PLAYER, move)
         }
@@ -86,60 +90,68 @@ class MainActivity : AppCompatActivity() {
             R.id.button7 -> location = 7
             R.id.button8 -> location = 8
         }
-        if(model.mGameOver == false) {
+        if(!model.mGameOver) {
             if(model.mBoardButtons[location]!!.isEnabled) {
                 setMove(TicTacToeGame.HUMAN_PLAYER, location)
                 var winner = model.mGame.checkForWinner()
                 var move = -1
                 if (winner == 0) {
                     information.text = getString(R.string.computer_turn)
-                    if(model.mMode == 0) {
-                        move = model.mGame.easyComputerMove
-                    } else if(model.mMode == 1) {
-                        move = model.mGame.mediumComputerMove
-                    } else if(model.mMode == 2){
-                        move = model.mGame.getHardComputerMove(model.lastWinner)
+                    when (model.mMode) {
+                        0 -> {
+                            move = model.mGame.easyComputerMove
+                        }
+                        1 -> {
+                            move = model.mGame.mediumComputerMove
+                        }
+                        2 -> {
+                            move = model.mGame.getHardComputerMove(model.lastWinner)
+                        }
                     }
                     setMove(TicTacToeGame.COMPUTER_PLAYER, move)
                     winner = model.mGame.checkForWinner()
                 }
-                if (winner == 0) {
-                    information.setTextColor(Color.rgb(0, 0, 0))
-                    information.text = getString(R.string.user_turn)
-                }
-                else if (winner == 1) {
-                    information.setTextColor(Color.rgb(0, 0, 200))
-                    model.lastWinner = (0..1).random()
-                    information.text = getString(R.string.tie_rst)
-                    model.player_wins = player_score.text.toString().toInt()
-                    model.computer_wins = computer_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.ties += 1
-                    savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
-                } else if (winner == 2) {
-                    information.setTextColor(Color.rgb(0, 200, 0))
-                    model.lastWinner = 0
-                    information.text = getString(R.string.user_rst)
-                    model.player_wins = player_score.text.toString().toInt()
-                    model.computer_wins = computer_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.player_wins += 1
-                    savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
-                } else if (winner == 3) {
-                    information.setTextColor(Color.rgb(200, 0, 0))
-                    model.lastWinner = 1
-                    information.text = getString(R.string.computer_rst)
-                    model.player_wins = player_score.text.toString().toInt()
-                    model.computer_wins = computer_score.text.toString().toInt()
-                    model.ties = tie_score.text.toString().toInt()
-                    model.computer_wins += 1
-                    savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
-                    loadPreferences()
-                    model.mGameOver = true
+                when (winner) {
+                    0 -> {
+                        information.setTextColor(Color.rgb(0, 0, 0))
+                        information.text = getString(R.string.user_turn)
+                    }
+                    1 -> {
+                        information.setTextColor(Color.rgb(0, 0, 200))
+                        model.lastWinner = (0..1).random()
+                        information.text = getString(R.string.tie_rst)
+                        model.player_wins = player_score.text.toString().toInt()
+                        model.computer_wins = computer_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.ties += 1
+                        savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
+                    2 -> {
+                        information.setTextColor(Color.rgb(0, 200, 0))
+                        model.lastWinner = 0
+                        information.text = getString(R.string.user_rst)
+                        model.player_wins = player_score.text.toString().toInt()
+                        model.computer_wins = computer_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.player_wins += 1
+                        savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
+                    3 -> {
+                        information.setTextColor(Color.rgb(200, 0, 0))
+                        model.lastWinner = 1
+                        information.text = getString(R.string.computer_rst)
+                        model.player_wins = player_score.text.toString().toInt()
+                        model.computer_wins = computer_score.text.toString().toInt()
+                        model.ties = tie_score.text.toString().toInt()
+                        model.computer_wins += 1
+                        savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
+                        loadPreferences()
+                        model.mGameOver = true
+                    }
                 }
             }
             model.saveBoard()
@@ -148,7 +160,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setMove(player: Char, location: Int) {
-        model.mGame!!.setMove(player, location)
+        model.mGame.setMove(player, location)
         model.mBoardButtons[location]!!.isEnabled = false
         model.mBoardButtons[location]!!.text = player.toString()
         if(player == TicTacToeGame.HUMAN_PLAYER) {
@@ -219,7 +231,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun showSettings() {
         val dialog = MaterialDialog(this).noAutoDismiss().customView(R.layout.settings)
-        val mode = settpref.getString("mode", "one")
         val audio = settpref.getString("audio", "off")
         // audio settings initialization
         if(audio == "on") {
@@ -253,7 +264,7 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    fun openWebPage(urls: String, context : Context) {
+    private fun openWebPage(urls: String, context : Context) {
         val uris = Uri.parse(urls)
         val intents = Intent(Intent.ACTION_VIEW, uris)
         context.startActivity(intents)
