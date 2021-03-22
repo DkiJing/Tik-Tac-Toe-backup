@@ -1,4 +1,4 @@
-package com.example.tictactoe;
+package com.example.tictactoe.controller;
 
 /* TicTacToeConsole.java
  * By Frank McCown (Harding University)

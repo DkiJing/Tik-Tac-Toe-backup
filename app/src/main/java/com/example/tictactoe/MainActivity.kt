@@ -9,7 +9,6 @@ import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -19,6 +18,8 @@ import android.widget.*
 import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
+import com.example.tictactoe.controller.TicTacToeGame
+import com.example.tictactoe.data.BoardViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {

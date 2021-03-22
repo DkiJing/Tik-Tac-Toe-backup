@@ -1,9 +1,10 @@
-package com.example.tictactoe
+package com.example.tictactoe.data
 
 import android.graphics.Color
 import android.media.MediaPlayer
 import android.widget.Button
 import androidx.lifecycle.ViewModel
+import com.example.tictactoe.controller.TicTacToeGame
 
 class TwoPlayerViewModel : ViewModel() {
 

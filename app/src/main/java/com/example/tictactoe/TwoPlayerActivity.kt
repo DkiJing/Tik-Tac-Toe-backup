@@ -18,6 +18,8 @@ import android.widget.*
 import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
 import com.afollestad.materialdialogs.customview.customView
+import com.example.tictactoe.controller.TicTacToeGame
+import com.example.tictactoe.data.TwoPlayerViewModel
 import kotlinx.android.synthetic.main.activity_two_player.*
 
 class TwoPlayerActivity : AppCompatActivity() {
