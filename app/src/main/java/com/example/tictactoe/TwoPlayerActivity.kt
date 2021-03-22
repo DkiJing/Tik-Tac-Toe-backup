@@ -12,6 +12,8 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
@@ -23,12 +25,14 @@ class TwoPlayerActivity : AppCompatActivity() {
 
     private lateinit var settpref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var anim: Animation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_two_player)
         model.mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
         model.loadBoard()
+        anim = AnimationUtils.loadAnimation(applicationContext, R.anim.zoom)
         information.text = model.mInfo
         initSettingPreferences()
         loadPreferences()
@@ -158,6 +162,7 @@ class TwoPlayerActivity : AppCompatActivity() {
                         information.setTextColor(Color.rgb(0, 200, 0))
                         model.lastWinner = 0
                         information.text = getString(R.string.x_rst)
+                        information.startAnimation(anim)
                         model.x_wins = x_score.text.toString().toInt()
                         model.o_wins = o_score.text.toString().toInt()
                         model.ties = tie_score.text.toString().toInt()
@@ -173,6 +178,7 @@ class TwoPlayerActivity : AppCompatActivity() {
                         information.setTextColor(Color.rgb(200, 0, 0))
                         model.lastWinner = 1
                         information.text = getString(R.string.o_rst)
+                        information.startAnimation(anim)
                         model.x_wins = x_score.text.toString().toInt()
                         model.o_wins = o_score.text.toString().toInt()
                         model.ties = tie_score.text.toString().toInt()

@@ -13,6 +13,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.Animation
+import android.view.animation.AnimationUtils
 import android.widget.*
 import androidx.activity.viewModels
 import com.afollestad.materialdialogs.MaterialDialog
@@ -24,6 +26,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var settpref: SharedPreferences
     private lateinit var editor: SharedPreferences.Editor
+    private lateinit var anim: Animation
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         // Buttons making up the board
         model.mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
         model.loadBoard()
+        anim = AnimationUtils.loadAnimation(applicationContext, R.anim.zoom)
         information.text = model.mInfo
         initSettingPreferences()
         loadPreferences()
@@ -154,6 +158,7 @@ class MainActivity : AppCompatActivity() {
                         information.setTextColor(Color.rgb(0, 200, 0))
                         model.lastWinner = 0
                         information.text = getString(R.string.user_rst)
+                        information.startAnimation(anim)
                         model.player_wins = player_score.text.toString().toInt()
                         model.computer_wins = computer_score.text.toString().toInt()
                         model.ties = tie_score.text.toString().toInt()
@@ -169,6 +174,7 @@ class MainActivity : AppCompatActivity() {
                         information.setTextColor(Color.rgb(200, 0, 0))
                         model.lastWinner = 1
                         information.text = getString(R.string.computer_rst)
+                        information.startAnimation(anim)
                         model.player_wins = player_score.text.toString().toInt()
                         model.computer_wins = computer_score.text.toString().toInt()
                         model.ties = tie_score.text.toString().toInt()
