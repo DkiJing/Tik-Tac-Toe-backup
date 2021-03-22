@@ -5,9 +5,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -30,7 +32,7 @@ class MainActivity : AppCompatActivity() {
         model.mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
         model.loadBoard()
         information.text = model.mInfo
-        initSettingPrefferences()
+        initSettingPreferences()
         loadPreferences()
         model.mCreatedCounter += 1
         if(model.mCreatedCounter <= 1) {
@@ -73,6 +75,26 @@ class MainActivity : AppCompatActivity() {
     //--- OnClickListener for Restart a New Game Button
     fun newGame(view: View) {
         button_restart.setOnClickListener { startNewGame() }
+    }
+
+    fun playAudio(audio: Int) {
+        when (audio) {
+            0 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.place)
+                model.mediaPlayer = MediaPlayer.create(applicationContext, uri)
+                model.mediaPlayer.start()
+            }
+            1 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.win)
+                model.mediaPlayer = MediaPlayer.create(applicationContext, uri)
+                model.mediaPlayer.start()
+            }
+            2 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.lose)
+                model.mediaPlayer = MediaPlayer.create(applicationContext, uri)
+                model.mediaPlayer.start()
+            }
+        }
     }
 
     // multiple button click method
@@ -139,6 +161,9 @@ class MainActivity : AppCompatActivity() {
                         savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
                         loadPreferences()
                         model.mGameOver = true
+                        if(model.mAudioOn) {
+                            playAudio(1)
+                        }
                     }
                     3 -> {
                         information.setTextColor(Color.rgb(200, 0, 0))
@@ -151,6 +176,9 @@ class MainActivity : AppCompatActivity() {
                         savePreferences(model.player_wins.toString(), model.computer_wins.toString(), model.ties.toString())
                         loadPreferences()
                         model.mGameOver = true
+                        if(model.mAudioOn) {
+                            playAudio(2)
+                        }
                     }
                 }
             }
@@ -168,6 +196,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             model.mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
         }
+        if(model.mAudioOn) {
+            playAudio(0)
+        }
     }
 
     fun easyMode(view: View) {
@@ -184,9 +215,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("CommitPrefEdits")
-    private fun initSettingPrefferences() {
+    private fun initSettingPreferences() {
         settpref = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
         editor = settpref.edit()
+        val audio = settpref.getString("audio", "off")
+        if(audio == "on") {
+            model.mAudioOn = true
+        } else if(audio == "off") {
+            model.mAudioOn = false
+        }
     }
 
     private fun savePreferences(p: String?, a: String?, t: String) {
@@ -253,6 +290,11 @@ class MainActivity : AppCompatActivity() {
                 intent = Intent(this, TwoPlayerActivity::class.java)
                 startActivity(intent)
                 finish()
+            }
+            if(selectedAudio == "on") {
+                model.mAudioOn = true
+            } else if(selectedAudio == "off") {
+                model.mAudioOn = false
             }
             editor.putString("mode", selectedMode).apply()
             editor.putString("audio", selectedAudio).apply()

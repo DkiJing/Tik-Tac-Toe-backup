@@ -1,6 +1,7 @@
 package com.example.tictactoe
 
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.widget.Button
 import androidx.lifecycle.ViewModel
 
@@ -10,6 +11,7 @@ class TwoPlayerViewModel : ViewModel() {
     var mGame = TicTacToeGame()
     // Buttons making up the board
     lateinit var mBoardButtons: Array<Button?>
+    lateinit var mediaPlayer: MediaPlayer
     var mBoardText: Array<String> = arrayOf("", "", "", "", "", "", "", "", "")
     var mBoardStates: Array<Boolean> = arrayOf(false, false, false, false, false, false, false, false, false)
     // Game Over
@@ -21,6 +23,7 @@ class TwoPlayerViewModel : ViewModel() {
     var ties = 0
     var hasMoved = false
     var mInfo = "info"
+    var mAudioOn = false
 
     fun saveBoard() {
         for(i in mBoardButtons.indices) {

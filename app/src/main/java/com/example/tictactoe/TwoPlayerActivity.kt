@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
+import android.media.MediaPlayer
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -29,7 +30,7 @@ class TwoPlayerActivity : AppCompatActivity() {
         model.mBoardButtons = arrayOf(button0, button1, button2, button3, button4, button5, button6, button7, button8)
         model.loadBoard()
         information.text = model.mInfo
-        initSettingPrefferences()
+        initSettingPreferences()
         loadPreferences()
         model.mCreatedCounter += 1
         if(model.mCreatedCounter <= 1) {
@@ -56,10 +57,36 @@ class TwoPlayerActivity : AppCompatActivity() {
         button_restart.setOnClickListener { startNewGame() }
     }
 
+    fun playAudio(audio: Int) {
+        when (audio) {
+            0 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.place)
+                model.mediaPlayer = MediaPlayer.create(this, uri)
+                model.mediaPlayer.start()
+            }
+            1 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.win)
+                model.mediaPlayer = MediaPlayer.create(this, uri)
+                model.mediaPlayer.start()
+            }
+            2 -> {
+                val uri = Uri.parse("android.resource://" + packageName + "/" + R.raw.lose)
+                model.mediaPlayer = MediaPlayer.create(this, uri)
+                model.mediaPlayer.start()
+            }
+        }
+    }
+
     @SuppressLint("CommitPrefEdits")
-    private fun initSettingPrefferences() {
+    private fun initSettingPreferences() {
         settpref = getSharedPreferences("SETTINGS", Context.MODE_PRIVATE)
         editor = settpref.edit()
+        val audio = settpref.getString("audio", "off")
+        if(audio == "on") {
+            model.mAudioOn = true
+        } else if(audio == "off") {
+            model.mAudioOn = false
+        }
     }
 
     private fun savePreferences(x: String?, o: String?, t: String) {
@@ -138,6 +165,9 @@ class TwoPlayerActivity : AppCompatActivity() {
                         savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
                         loadPreferences()
                         model.mGameOver = true
+                        if(model.mAudioOn) {
+                            playAudio(1)
+                        }
                     }
                     3 -> {
                         information.setTextColor(Color.rgb(200, 0, 0))
@@ -150,6 +180,9 @@ class TwoPlayerActivity : AppCompatActivity() {
                         savePreferences(model.x_wins.toString(), model.o_wins.toString(), model.ties.toString())
                         loadPreferences()
                         model.mGameOver = true
+                        if(model.mAudioOn) {
+                            playAudio(1)
+                        }
                     }
                 }
             }
@@ -166,6 +199,9 @@ class TwoPlayerActivity : AppCompatActivity() {
             model.mBoardButtons[location]!!.setTextColor(Color.parseColor("#ff0000"))
         } else {
             model.mBoardButtons[location]!!.setTextColor(Color.parseColor("#00ff00"))
+        }
+        if(model.mAudioOn) {
+            playAudio(0)
         }
     }
 
@@ -218,6 +254,12 @@ class TwoPlayerActivity : AppCompatActivity() {
                 intent = Intent(this, MainActivity::class.java)
                 startActivity(intent)
                 finish()
+            }
+            if(selectedAudio == "on") {
+                model.mAudioOn = true
+                Toast.makeText(this, model.mAudioOn.toString(), Toast.LENGTH_SHORT).show()
+            } else if(selectedAudio == "off") {
+                model.mAudioOn = false
             }
             editor.putString("mode", selectedMode).apply()
             editor.putString("audio", selectedAudio).apply()
